@@ -98,4 +98,4 @@ class FirebaseClient {
   }
 }
 
-export default new FirebaseClient();
+export default FirebaseClient;

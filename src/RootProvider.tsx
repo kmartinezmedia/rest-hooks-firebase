@@ -1,8 +1,7 @@
 import React, { Suspense } from 'react';
 import { CacheProvider } from 'rest-hooks';
 
-import FirebaseClient from 'utils/FirebaseClient';
-import FirebaseManager from 'utils/FirebaseManager';
+import FirebaseManager from './FirebaseManager';
 
 export default function RootProvider({
   children,
@@ -11,10 +10,7 @@ export default function RootProvider({
 }) {
   return (
     <CacheProvider
-      managers={[
-        new FirebaseManager({ firebase: FirebaseClient }),
-        ...CacheProvider.defaultProps.managers,
-      ]}
+      managers={[new FirebaseManager(), ...CacheProvider.defaultProps.managers]}
     >
       <Suspense fallback={null}>{children}</Suspense>
     </CacheProvider>

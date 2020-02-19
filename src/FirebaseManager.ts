@@ -14,7 +14,6 @@ import {
 
 import FirebaseClient from './FirebaseClient';
 
-type Firebase = typeof FirebaseClient;
 export type Handler = { dispatch: Dispatch<any>; url: string };
 
 export default class FirebaseManager implements Manager {
@@ -22,7 +21,7 @@ export default class FirebaseManager implements Manager {
     [subscription: string]: { dispatch: Dispatch<any>; url: string };
   } = {};
 
-  firebase: Firebase;
+  firebase: FirebaseClient;
   protected declare middleware: Middleware;
 
   protected handleSubscribe(action: SubscribeAction, dispatch: Dispatch<any>) {
@@ -57,9 +56,8 @@ export default class FirebaseManager implements Manager {
     return this.middleware;
   }
 
-  constructor(deps: { firebase: Firebase }) {
-    this.firebase = deps.firebase;
-    console.log(this.firebase);
+  constructor() {
+    this.firebase = new FirebaseClient();
     this.middleware = <R extends React.Reducer<any, any>>({
       dispatch,
     }: MiddlewareAPI<R>) => {
