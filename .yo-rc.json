@@ -1,0 +1,24 @@
+{
+  "@anansi/generator-js": {
+    "promptValues": {
+      "projectType": "SPA",
+      "githubOrg": "kmartinezmedia",
+      "features": [
+        "storybook",
+        "testing",
+        "CI"
+      ],
+      "reactMode": "legacy"
+    },
+    "githubOrg": "kmartinezmedia",
+    "rootPath": "src",
+    "assetPath": "dist",
+    "appName": "ui-kit",
+    "githubDomain": "github.com",
+    "testing": true,
+    "badges": "",
+    "storybook": true,
+    "webpack": true,
+    "reactMode": "legacy"
+  }
+}
