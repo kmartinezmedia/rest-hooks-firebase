@@ -5,6 +5,7 @@ import PostResource from 'resources/PostResource';
 
 const Posts = () => {
   const posts = useCache(PostResource.listShape(), {});
+  console.log(posts);
   return (
     <div>
       <h1>Posts</h1>

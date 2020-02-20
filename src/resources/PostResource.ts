@@ -1,5 +1,4 @@
 import { Resource, SimpleResource } from 'rest-hooks';
-
 import { FirebaseGeoPoint, FirebaseTimestamp } from 'utils/FirebaseClient';
 
 export default class PostResource extends Resource {
@@ -22,9 +21,6 @@ export default class PostResource extends Resource {
   static firebaseListShape<T extends typeof SimpleResource>(this: T) {
     return {
       ...this.listShape(),
-      getFetchKey: () => {
-        return '/posts';
-      },
       options: {
         pollFrequency: 0,
         extra: {
@@ -33,4 +29,6 @@ export default class PostResource extends Resource {
       },
     };
   }
+
+  static urlRoot = '/posts';
 }

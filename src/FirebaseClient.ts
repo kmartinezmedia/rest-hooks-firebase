@@ -9,6 +9,9 @@ export type FirebaseDoc = firebase.firestore.DocumentData;
 export type FirebaseGeoPoint = firebase.firestore.GeoPoint;
 export type FirebaseTimestamp = firebase.firestore.Timestamp;
 
+const date = new Date() * 1;
+const expiresAt = new Date() * 1000;
+
 class FirebaseClient {
   protected db: firebase.firestore.Firestore;
   protected auth: firebase.auth.Auth;
@@ -17,12 +20,15 @@ class FirebaseClient {
     [subscription: string]: (handler: Handler) => void;
   } = {
     user: handler => this.watchUser(handler),
-    posts: ({ dispatch, url }) =>
+    posts: ({ dispatch, schema, url }) =>
       this.watchCollection('posts', payload =>
         dispatch({
           type: RECEIVE_TYPE,
+          date,
+          expiresAt,
           payload,
           meta: {
+            schema,
             url,
           },
         }),
@@ -33,7 +39,7 @@ class FirebaseClient {
     [subscription: string]: firebase.Unsubscribe;
   } = {};
 
-  watchUser({ dispatch, url }: { dispatch: Function; url: string }): void {
+  watchUser({ dispatch, url, schema }: Handler): void {
     this.auth.onAuthStateChanged((auth: firebase.User | null) => {
       if (auth) {
         const unsubscribe = this.watchDoc(
@@ -42,8 +48,11 @@ class FirebaseClient {
             if (payload) {
               dispatch({
                 type: RECEIVE_TYPE,
+                date,
+                expiresAt,
                 payload,
                 meta: {
+                  schema,
                   url,
                 },
               });

@@ -5,20 +5,17 @@ import {
   UnsubscribeAction,
   Manager,
   Dispatch,
+  Schema,
 } from 'rest-hooks';
-import {
-  SUBSCRIBE_TYPE,
-  UNSUBSCRIBE_TYPE,
-  RECEIVE_TYPE,
-} from 'rest-hooks/lib/actionTypes';
+import { SUBSCRIBE_TYPE, UNSUBSCRIBE_TYPE } from 'rest-hooks/lib/actionTypes';
 
 import FirebaseClient from './FirebaseClient';
 
-export type Handler = { dispatch: Dispatch<any>; url: string };
+export type Handler = { dispatch: Dispatch<any>; url: string; schema: Schema };
 
 export default class FirebaseManager implements Manager {
   protected subscriptionHandlers: {
-    [subscription: string]: { dispatch: Dispatch<any>; url: string };
+    [subscription: string]: Handler;
   } = {};
 
   firebase: FirebaseClient;
@@ -27,9 +24,10 @@ export default class FirebaseManager implements Manager {
   protected handleSubscribe(action: SubscribeAction, dispatch: Dispatch<any>) {
     const subscription = action.meta?.options?.extra?.subscription;
     const url = action.meta.url;
+    const schema = action.meta.schema;
     if (!subscription) return;
     if (!(subscription in this.subscriptionHandlers)) {
-      const handler = { dispatch, url, action };
+      const handler = { dispatch, url, schema };
       this.subscriptionHandlers[subscription] = handler;
       this.firebase.subscriptionHandlers[subscription](handler);
     }
@@ -62,23 +60,22 @@ export default class FirebaseManager implements Manager {
       dispatch,
     }: MiddlewareAPI<R>) => {
       return (next: Dispatch<R>) => (action: React.ReducerAction<R>) => {
+        console.log(action);
         switch (action.type) {
           case SUBSCRIBE_TYPE:
             if (action.meta.options?.pollFrequency === 0) {
               this.handleSubscribe(action, dispatch);
+              return Promise.resolve();
+            } else {
+              return next(action);
             }
-            return Promise.resolve();
           case UNSUBSCRIBE_TYPE:
             if (action.meta.options?.pollFrequency === 0) {
               this.handleUnsubscribe(action);
+              return Promise.resolve();
+            } else {
+              return next(action);
             }
-            return Promise.resolve();
-          case RECEIVE_TYPE:
-            // debugger;
-            // only receive after new state is computed
-            return next(action).then(() => {
-              // handle receive here
-            });
           default:
             return next(action);
         }
